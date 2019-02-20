@@ -2,47 +2,36 @@
 
 const line = require('@line/bot-sdk');
 const express = require('express');
+const bodyParser = require('body-parser');
 const functions = require('firebase-functions');
+const api = require('./api');
 require('dotenv').config();
-console.log(process.env);
-// create LINE SDK config from env variables
+
 const config = {
   channelAccessToken: process.env.LINE_ACCESS_TOKEN,
   channelSecret: process.env.LINE_SECRET
 };
-
-// create LINE SDK client
 const client = new line.Client(config);
-
-// create Express app
-// about Express itself: https://expressjs.com/
 const app = express();
+app.use(bodyParser.urlencoded({ extended : true }));
+app.use(bodyParser.json());
 
-// register a webhook handler with middleware
-// about the middleware, please refer to doc
-app.post('/callback', line.middleware(config), (req, res) => {
-  Promise
-    .all(req.body.events.map(handleEvent))
-    .then((result) => res.json(result))
-    .catch((err) => {
-      console.error(err);
-      res.status(500).end();
-    });
+const handleLineEvent = async event => {
+  if (event.type !== 'message' || event.message.type !== 'text')
+    return Promise.resolve(null); // ignore non-text-message event
+  const echo = { type: 'text', text: event.message.text }; // create a echoing text message
+  return await client.replyMessage(event.replyToken, echo);
+}
+
+app.post('/callback', line.middleware(config), async(req, res) => {
+  const result = await Promise.all(req.body.events.map(handleLineEvent)).catch((err) => {
+    console.error(err);
+    res.status(500).end();
+  });
+  res.json(result);
 });
 
-// event handler
-function handleEvent(event) {
-  if (event.type !== 'message' || event.message.type !== 'text') {
-    // ignore non-text-message event
-    return Promise.resolve(null);
-  }
-
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
-
-  // use reply API
-  return client.replyMessage(event.replyToken, echo);
-}
+app.use('/api', api);
 
 // listen on port
 const port = process.env.PORT || 3000;

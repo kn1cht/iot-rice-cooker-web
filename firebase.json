@@ -9,6 +9,10 @@
       {
         "source": "/callback",
         "function": "app"
+      },
+      {
+        "source": "/api",
+        "function": "app"
       }
     ],
     "ignore": [
