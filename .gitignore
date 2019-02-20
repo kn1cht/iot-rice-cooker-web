@@ -69,6 +69,6 @@ node_modules/
 # project specific
 .DS_Store
 /dist
-/old
 /coverage
 /build
+key.json
