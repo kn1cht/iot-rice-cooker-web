@@ -9,10 +9,13 @@ class Store {
   constructor() {
     this.db = admin.firestore();
   }
-  async getDocsInCollection(name) {
+  async getDocsInCollection(name, query = []) {
     const result = {};
-    const snapshot = await this.db.collection(name)
-      .get().catch((err) => console.error(err));
+    let ref = this.db.collection(name);
+    if(query.length)
+      for(let q of query) ref = ref.where(q.field, q.operator, q.data); // { field, operator, data }
+
+    const snapshot = await ref.get().catch((err) => console.error(err));
     snapshot.forEach((doc) => {
       result[doc.id] = doc.data();
     });

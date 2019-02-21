@@ -1,15 +1,11 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const router = express.Router();
 const store = new (require('../store'))();
+const isCookable = require('../common/isCookable');
 
-const isCookable = async(id) => {
-  const cooker = await store.getDocInCollection('cookers', id);
-  if(cooker.weight <= -30)
-    return({ ok : false, error : 'Weight invalid' });
-  else if(cooker.weight >= 30)
-    return({ ok : false, error : 'The cooker is not empty' });
-  else return { ok : true }
-}
+router.use(bodyParser.urlencoded({ extended : true }));
+router.use(bodyParser.json());
 
 router.get('/', async(req, res) => {
   const cookers = await store.getDocsInCollection('cookers');

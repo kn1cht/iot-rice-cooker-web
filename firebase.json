@@ -7,11 +7,11 @@
     "public": "build",
     "rewrites": [
       {
-        "source": "/callback",
+        "source": "/api",
         "function": "app"
       },
       {
-        "source": "/api",
+        "source": "/api/**",
         "function": "app"
       }
     ],
