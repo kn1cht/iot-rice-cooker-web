@@ -91,9 +91,11 @@ const handleLineEvent = async event => {
     if(event.message.text.match(/炊飯/))
       return handleCooking(event, client, cooker, cookerId);
     else {
+      const cookable = (cooker.amount === 0 && cooker.weight < 30 && cooker.weight > -30);
+      const statusText = cookable ? '炊飯できます。' : (cooker.amount ? '炊飯中です。' : '炊飯完了しました。');
       return client.replyMessage(event.replyToken, {
         type : 'text',
-        text : `[${cooker.name}]\nご飯の量は現在${cooker.weight} gです。`
+        text : `[${cooker.name}]\n${statusText}\nご飯の量は現在${cooker.weight} gです。`
       });
     }
   }

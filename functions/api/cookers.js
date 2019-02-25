@@ -39,17 +39,17 @@ router.get('/:id/active', async(req, res) => {
   res.json(cooker.active);
 });
 router.put('/:id/active', async(req, res) => {
-  const active = Boolean(req.body.active);
-  if(active === undefined)
-    res.json({ ok : false, error : 'Parameter invalid' });
-  else if(active === false) {
+  const active = parseInt(req.body.active);
+  if(active === 0) {
     const ok = await store.updateDocInCollection('cookers', req.params.id, { active, amount : 0 });
     res.json({ ok });
   }
-  else {
+  else if(active === 1) {
     const ok = await store.updateDocInCollection('cookers', req.params.id, { active });
     res.json({ ok });
   }
+  else
+    res.json({ ok : false, error : 'Parameter invalid' });
 });
 
 router.get('/:id/cookable', async(req, res) => {
