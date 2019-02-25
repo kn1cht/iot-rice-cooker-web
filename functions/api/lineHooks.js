@@ -69,7 +69,7 @@ const handleCooking = (event, client, cooker, cookerId) => {
 const handleLineEvent = async event => {
   if (event.type !== 'message' && event.type !== 'postback') return Promise.resolve(null);
   if(event.type === 'postback') {
-    console.log(JSON.parse(event.postback.data));
+    console.log(JSON.parse(event.postback.data));  // TODO: 同じメッセージのデータは受けないようにする
     return client.replyMessage(event.replyToken, {
       type : 'text',
       text : await startCooking(JSON.parse(event.postback.data))

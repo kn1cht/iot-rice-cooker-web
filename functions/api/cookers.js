@@ -40,12 +40,16 @@ router.get('/:id/active', async(req, res) => {
 });
 router.put('/:id/active', async(req, res) => {
   const active = Boolean(req.body.active);
-  if(active === undefined) {
+  if(active === undefined)
     res.json({ ok : false, error : 'Parameter invalid' });
-    return;
+  else if(active === false) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { active, amount : 0 });
+    res.json({ ok });
   }
-  const ok = await store.updateDocInCollection('cookers', req.params.id, { active });
-  res.json({ ok });
+  else {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { active });
+    res.json({ ok });
+  }
 });
 
 router.get('/:id/cookable', async(req, res) => {
