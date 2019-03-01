@@ -1,4 +1,4 @@
-const store = new (require('../store'))();
+const store = new (require('./store'))();
 
 module.exports = async(id) => {
   const cooker = await store.getDocInCollection('cookers', id);

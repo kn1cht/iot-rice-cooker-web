@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const line = require('@line/bot-sdk');
 require('dotenv').config();
-const store = new (require('../store'))();
+const store = new (require('../common/store'))();
 const isCookable = require('../common/isCookable');
 
 const config = {

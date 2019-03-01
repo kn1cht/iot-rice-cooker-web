@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
-const store = new (require('../store'))();
+const store = new (require('../common/store'))();
 const isCookable = require('../common/isCookable');
 
 router.use(bodyParser.urlencoded({ extended : true }));
