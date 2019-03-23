@@ -41,11 +41,11 @@ router.get('/:id/active', async(req, res) => {
 router.put('/:id/active', async(req, res) => {
   const active = parseInt(req.body.active);
   if(active === 0) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { active, amount : 0 });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { active : false, amount : 0 });
     res.json({ ok });
   }
   else if(active === 1) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { active });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { active : true });
     res.json({ ok });
   }
   else
@@ -54,6 +54,24 @@ router.put('/:id/active', async(req, res) => {
 
 router.get('/:id/cookable', async(req, res) => {
   res.json(await isCookable(req.params.id));
+});
+
+router.get('/:id/water1', async(req, res) => {
+  const cooker = await store.getDocInCollection('cookers', req.params.id);
+  res.json(cooker.water1);
+});
+router.put('/:id/water1', async(req, res) => {
+  const water1 = parseInt(req.body.water1);
+  if(water1 === 0) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { water1 : false });
+    res.json({ ok });
+  }
+  else if(water1 === 1) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { water1 : true });
+    res.json({ ok });
+  }
+  else
+    res.json({ ok : false, error : 'Parameter invalid' });
 });
 
 router.get('/:id/weight', async(req, res) => {
