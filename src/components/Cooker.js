@@ -15,10 +15,10 @@ const styles = theme => ({
     flexGrow: 0,
     marginTop: theme.spacing.unit * 3,
     overflowX: 'auto',
+    padding: 30,
   },
   table: {
-    minWidth: 300,
-    width: '40%',
+    maxWidth: 500,
   },
 });
 
@@ -26,7 +26,11 @@ class Cooker extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { user: {}, cooker: {} }
+    this.state = {
+      cooker: {},
+      loading : true,
+      user: {},
+    };
   }
 
   async componentWillMount() {
@@ -42,35 +46,40 @@ class Cooker extends Component {
     const cooker = cookerSnapshot.data();
 
     this.setState({
+      cooker,
       user: users[0],
-      cooker
+      loading: false
     });
   }
 
   render() {
     const { classes } = this.props;
+    const { cooker, loading } = this.state;
+    if (loading) {
+      return <Paper className={classes.root}>Loading...</Paper>
+    }
 
     return (
       <Paper className={classes.root}>
         <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell> Name </TableCell>
-              <TableCell align="right"> {this.state.cooker.name} </TableCell>
-            </TableRow>
-          </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell> active </TableCell>
-              <TableCell align="right"> {this.state.cooker.active} </TableCell>
+              <TableCell align="left"> {cooker.name} </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell> amount </TableCell>
-              <TableCell align="right"> {this.state.cooker.amount} 合 </TableCell>
+              <TableCell align="left"> {cooker.active ? '炊飯中' : '待機中'} </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell> weight </TableCell>
-              <TableCell align="right"> {this.state.cooker.weight} g </TableCell>
+              <TableCell align="left"> 炊飯量 {cooker.amount} 合 </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell align="left"> 釜内重量 {cooker.weight} g </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell align="left"> 水タンク {cooker.water ? '残量あり' : '残量不足'}  </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell align="left"> 廃水タンク {cooker.waste ? '満水' : '余裕あり'}  </TableCell>
             </TableRow>
           </TableBody>
         </Table>

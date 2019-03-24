@@ -35,19 +35,20 @@ const styles = theme => ({
 });
 
 class Header extends Component {
-  constructor() {
+  constructor({onLogin}) {
     super();
 
-    this.state = { isLogin: false, username: '', profilePicUrl: '' }
+    this.state = { isAuthed: false, username: '', profilePicUrl: '' }
   }
 
   componentWillMount() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.setState({ isLogin: true, username: user.displayName, profilePicUrl: user.photoURL });
+        this.setState({ isAuthed: true, username: user.displayName, profilePicUrl: user.photoURL });
       } else {
-        this.setState({ isLogin: false, username: '', profilePicUrl: '' });
+        this.setState({ isAuthed: false, username: '', profilePicUrl: '' });
       }
+      this.onLogin(this.state.isAuthed);
     });
   }
 
@@ -91,7 +92,7 @@ class Header extends Component {
             <Typography variant="title" color="inherit" className={classes.flex}>
               IoT Rice Cooker
             </Typography>
-            {this.state.isLogin ? this.renderLoginedComponent(classes) : this.renderLoginComponent(classes)}
+            {this.state.isAuthed ? this.renderLoginedComponent(classes) : this.renderLoginComponent(classes)}
           </Toolbar>
         </AppBar>
       </div>
