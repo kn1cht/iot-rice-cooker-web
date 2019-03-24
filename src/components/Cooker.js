@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import CookerSummaryCard from './CookerSummaryCard';
+import CookerSupplyCard from './CookerSupplyCard';
 
 const styles = theme => ({
   root: {
     flexGrow: 0,
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing.unit,
     overflowX: 'auto',
+    padding: 5,
+  },
+  paper: {
     padding: 30,
   },
   table: {
@@ -56,34 +62,57 @@ class Cooker extends Component {
     const { classes } = this.props;
     const { cooker, loading } = this.state;
     if (loading) {
-      return <Paper className={classes.root}>Loading...</Paper>
+      return (
+      <Grid container spacing={24} className={classes.root}>
+        <Paper className={classes.paper}>
+          <Typography variant="body" gutterBottom={true}>
+            Loading...
+          </Typography>
+        </Paper>
+      </Grid>
+      );
     }
 
     return (
-      <Paper className={classes.root}>
-        <Table className={classes.table}>
-          <TableBody>
-            <TableRow>
-              <TableCell align="left"> {cooker.name} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell align="left"> {cooker.active ? '炊飯中' : '待機中'} </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell align="left"> 炊飯量 {cooker.amount} 合 </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell align="left"> 釜内重量 {cooker.weight} g </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell align="left"> 水タンク {cooker.water ? '残量あり' : '残量不足'}  </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell align="left"> 廃水タンク {cooker.waste ? '満水' : '余裕あり'}  </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </Paper>
+      <Grid container spacing={24} className={classes.root}>
+        <Grid item xs={12}>
+          <Paper className={classes.paper}>
+            <Typography variant="h4">
+              {cooker.name}
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <CookerSummaryCard cooker={cooker} ></CookerSummaryCard>
+        </Grid>
+        <Grid item xs={2}>
+          <CookerSupplyCard cooker={cooker} ></CookerSupplyCard>
+        </Grid>
+        <Grid item xs={4}>
+          <Table className={classes.table}>
+            <TableBody>
+              <TableRow>
+                <TableCell align="left">  </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="left"> {cooker.active ? '炊飯中' : '待機中'} </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="left"> 炊飯量 {cooker.amount} 合 </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="left"> 釜内重量 {cooker.weight} g </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="left"> 水タンク {cooker.water ? '残量あり' : '残量不足'}  </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell align="left"> 廃水タンク {cooker.waste ? '満水' : '余裕あり'}  </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Grid>
+      </Grid>
     );
   }
 }

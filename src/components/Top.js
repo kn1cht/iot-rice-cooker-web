@@ -9,7 +9,7 @@ import 'firebase/firestore';
 const styles = theme => ({
   root: {
     flexGrow: 0,
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing.unit,
     overflowX: 'auto',
     padding: 30,
   }
