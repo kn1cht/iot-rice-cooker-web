@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import firebase from 'firebase/app';
 import config from '../config/firebase-config';
 import Header from './Header';
+import Cooker from './Cooker';
 
 class App extends Component {
   constructor() {
@@ -13,7 +15,14 @@ class App extends Component {
 
   render() {
     return (
-      <Header />
+      <Router>
+        <div className="App">
+          <Header />
+          <Switch>
+            <Route path="/" component={Cooker} />
+          </Switch>
+        </div>
+      </Router>
     );
   }
 }
