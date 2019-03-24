@@ -6,9 +6,9 @@ import Header from './Header';
 class App extends Component {
   constructor() {
     super();
-
     // Initialize Firebase
-    firebase.initializeApp(config);
+    if(firebase.apps.length === 0) firebase.initializeApp(config);
+
   }
 
   render() {
