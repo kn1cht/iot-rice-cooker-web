@@ -37,7 +37,7 @@ const styles = theme => ({
 class Header extends Component {
   constructor({onLogin}) {
     super();
-
+    this.onLogin = onLogin;
     this.state = { isAuthed: false, username: '', profilePicUrl: '' }
   }
 

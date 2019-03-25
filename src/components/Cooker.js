@@ -65,7 +65,7 @@ class Cooker extends Component {
       return (
       <Grid container spacing={24} className={classes.root}>
         <Paper className={classes.paper}>
-          <Typography variant="body" gutterBottom={true}>
+          <Typography variant="body1" gutterBottom={true}>
             Loading...
           </Typography>
         </Paper>
