@@ -5,9 +5,20 @@
   },
   "hosting": {
     "public": "build",
+    "redirects": [
+      {
+        "source" : "/",
+        "destination" : "/app",
+        "type" : 301
+      }
+    ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/app",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/app/**",
         "destination": "/index.html"
       },
       {

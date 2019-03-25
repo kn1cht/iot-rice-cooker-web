@@ -22,8 +22,8 @@ class App extends Component {
         <div className="App">
           <Header onLogin={this.onLogin} />
           <Switch>
-            <Route exact path="/" component={Top} />
-            <Route path="/dashboard" component={Cooker} />
+            <Route exact path="/app" component={Top} />
+            <Route path="/app/dashboard" component={Cooker} />
           </Switch>
         </div>
       </Router>

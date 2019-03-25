@@ -37,7 +37,7 @@ class Top extends Component {
       <Typography variant="h2" gutterBottom={true}>
         Welcome to IoT Rice Cooker Dashboard.
       </Typography>
-      <Button variant="contained" color="primary" href="/dashboard" className={classes.button}>
+      <Button variant="contained" color="primary" href="dashboard" className={classes.button}>
         Go to Dashboard
       </Button>
       </Paper>

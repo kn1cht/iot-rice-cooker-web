@@ -3,21 +3,20 @@ import PropTypes from 'prop-types';
 import styled, { keyframes } from "styled-components";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCog } from '@fortawesome/free-solid-svg-icons'
+import { faCog, faPowerOff } from '@fortawesome/free-solid-svg-icons'
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import 'firebase/firestore';
 
-library.add(
-  faCog
-)
+library.add(faCog, faPowerOff);
 
 const styles = {
   card: {
-    maxWidth: 275,
+    maxWidth: 500,
     marginButtom: 10,
     marginTop: 10,
   },
@@ -40,7 +39,42 @@ display: inline-block;
 `;
 
 const CookerSummaryCard = props => {
-  const { classes, cooker } = props;
+  const { classes, cooker, cookerRef } = props;
+
+  const activeIcon = () => {
+    if(cooker.active) return (
+      <Spinner className={classes.leftIcon}>
+        <FontAwesomeIcon icon={faCog} size="lg" />
+      </Spinner>
+    );
+    else return (
+      <FontAwesomeIcon className={classes.leftIcon} icon={faPowerOff} size="lg" />
+    );
+  }
+
+  const startCooking = async() => {
+    const amount = 1; // TODO: 指定できるように
+    if(amount <= 0 || cooker.weight <= -30 || cooker.weight >= 30) {
+      // TODO: Error
+    }
+    else {
+      await cookerRef.update({ amount }).catch((err) => { console.error(err); });
+    }
+  }
+
+  const abortCooking = async() => { // TODO: 本当に中止させる
+    console.log(cookerRef);
+    await cookerRef.update({ active: false, amount: 0 }).catch((err) => { console.error(err); });
+  }
+
+  const activeButton = () => {
+    if(cooker.active) return (
+      <Button onClick={abortCooking} size="small" variant="contained" color="secondary">中止</Button>
+    );
+    else return (
+      <Button onClick={startCooking} size="small" variant="contained" color="primary">炊飯開始</Button>
+    );
+  }
 
   return (
     <Card className={classes.card}>
@@ -49,9 +83,7 @@ const CookerSummaryCard = props => {
           概要
         </Typography>
         <Typography variant="h4" component="h2" gutterBottom>
-          <Spinner className={classes.leftIcon}>
-            <FontAwesomeIcon icon={faCog} size="lg" />
-          </Spinner>
+          {activeIcon()}
           {cooker.active ? '炊飯中' : '待機中'}
         </Typography>
         <Typography variant="h5" gutterBottom>
@@ -62,7 +94,7 @@ const CookerSummaryCard = props => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary">編集</Button>
+        {activeButton(cooker.active)}
       </CardActions>
     </Card>
   );

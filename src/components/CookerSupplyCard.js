@@ -16,7 +16,7 @@ library.add(
 
 const styles = {
   card: {
-    maxWidth: 275,
+    maxWidth: 500,
     marginButtom: 10,
     marginTop: 10,
   },
@@ -53,17 +53,24 @@ const CookerSupplyCard = props => {
         <Typography className={classes.title} color="textSecondary" gutterBottom>
           消耗品
         </Typography>
-        <Typography variant="h5">
+        <Typography variant="h5" gutterBottom>
+          米びつ
+        </Typography>
+        <Typography component="p" gutterBottom>
+          {supplyIcon(true)}
+          残量あり {/*TODO: 実装 */}
+        </Typography>
+        <Typography variant="h5" gutterBottom>
           給水タンク
         </Typography>
         <Typography component="p" gutterBottom>
           {supplyIcon(cooker.water)}
           {cooker.water ? '残量あり' : '残量不足'}
         </Typography>
-        <Typography variant="h5">
-          廃水タンク
+        <Typography variant="h5" gutterBottom>
+          排水タンク
         </Typography>
-        <Typography component="p">
+        <Typography component="p" gutterBottom>
           {supplyIcon(!cooker.waste)}
           {cooker.waste ? '満水' : '余裕あり'}
         </Typography>
