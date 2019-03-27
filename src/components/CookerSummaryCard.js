@@ -67,8 +67,8 @@ const CookerSummaryCard = props => {
     await cookerRef.update({ active: false, amount: 0 }).catch((err) => { console.error(err); });
   }
 
-  const activeButton = () => {
-    if(cooker.active) return (
+  const cookingButton = () => {
+    if(cooker.amount) return (
       <Button onClick={abortCooking} size="small" variant="contained" color="secondary">中止</Button>
     );
     else return (
@@ -94,7 +94,7 @@ const CookerSummaryCard = props => {
         </Typography>
       </CardContent>
       <CardActions>
-        {activeButton(cooker.active)}
+        {cookingButton()}
       </CardActions>
     </Card>
   );
