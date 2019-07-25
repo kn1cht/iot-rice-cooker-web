@@ -22,7 +22,7 @@ router.get('/:id/amount', async(req, res) => {
 });
 router.put('/:id/amount', async(req, res) => {
   const amount = parseInt(req.body.amount);
-  if(Number.isNaN(amount) || amount < 0 || amount > 3) { // TODO: maxを設定する
+  if(Number.isNaN(amount) || amount < 0 || amount > 3) { // TODO: maxを設定できるようにする
     res.json({ ok : false, error : 'Parameter invalid' });
     return;
   }
@@ -56,18 +56,54 @@ router.get('/:id/cookable', async(req, res) => {
   res.json(await isCookable(req.params.id));
 });
 
-router.get('/:id/water1', async(req, res) => {
+router.get('/:id/isRiceShortage', async(req, res) => {
   const cooker = await store.getDocInCollection('cookers', req.params.id);
-  res.json(cooker.water1);
+  res.json(cooker.isRiceShortage);
 });
-router.put('/:id/water1', async(req, res) => {
-  const water1 = parseInt(req.body.water1);
-  if(water1 === 0) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { water1 : false });
+router.put('/:id/isRiceShortage', async(req, res) => {
+  const isRiceShortage = parseInt(req.body.isRiceShortage);
+  if(isRiceShortage === 0) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { isRiceShortage : false });
     res.json({ ok });
   }
-  else if(water1 === 1) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { water1 : true });
+  else if(isRiceShortage === 1) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { isRiceShortage : true });
+    res.json({ ok });
+  }
+  else
+    res.json({ ok : false, error : 'Parameter invalid' });
+});
+
+router.get('/:id/waste', async(req, res) => {
+  const cooker = await store.getDocInCollection('cookers', req.params.id);
+  res.json(cooker.waste);
+});
+router.put('/:id/waste', async(req, res) => {
+  const waste = parseInt(req.body.waste);
+  if(waste === 0) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { waste : false });
+    res.json({ ok });
+  }
+  else if(waste === 1) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { waste : true });
+    res.json({ ok });
+  }
+  else
+    res.json({ ok : false, error : 'Parameter invalid' });
+});
+
+router.get('/:id/water', async(req, res) => {
+  const cooker = await store.getDocInCollection('cookers', req.params.id);
+  res.json(cooker.water);
+});
+router.put('/:id/water', async(req, res) => {
+  const water = parseInt(req.body.water);
+  if(water === 0) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { water : false });
+    res.json({ ok });
+  }
+  else if(water === 1) {
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { water : true });
     res.json({ ok });
   }
   else
