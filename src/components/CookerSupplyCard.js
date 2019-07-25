@@ -57,8 +57,8 @@ const CookerSupplyCard = props => {
           米びつ
         </Typography>
         <Typography component="p" gutterBottom>
-          {supplyIcon(true)}
-          残量あり {/*TODO: 実装 */}
+          {supplyIcon(!cooker.isRiceShortage)}
+          {cooker.isRiceShortage ? '残量不足' : '残量あり'}
         </Typography>
         <Typography variant="h5" gutterBottom>
           給水タンク
