@@ -50,28 +50,8 @@ const handleCooking = (event, client, cooker, cookerId, skipWarning) => {
       token : event.replyToken
     };
     let text = `[${cooker.name}]\n以下の警告が発生しています。本当に開始してもよろしいですか？`;
-    text += messages.getWarningText(cooker);
-
-    return client.replyMessage(event.replyToken, {
-      type     : 'template',
-      altText  : 'Warning Confirmation',
-      template : {
-        type    : 'confirm',
-        text,
-        actions : [
-          {
-            type  : 'postback',
-            label : '開始する',
-            data  : JSON.stringify(Object.assign(dataTemplate, { action : 'confirm' }))
-          },
-          {
-            type  : 'postback',
-            label : 'キャンセル',
-            data  : JSON.stringify(Object.assign(dataTemplate, { action : 'cancel' }))
-          }
-        ]
-      }
-    });
+    text += messages.warningText(cooker);
+    return client.replyMessage(event.replyToken, messages.confirmTemplate(dataTemplate, text));
   }
   else {
     const dataTemplate = {
@@ -80,31 +60,8 @@ const handleCooking = (event, client, cooker, cookerId, skipWarning) => {
       cookerName : cooker.name,
       token : event.replyToken
     };
-    return client.replyMessage(event.replyToken, {
-      type     : 'template',
-      altText  : 'Suihan Menu Buttons',
-      template : {
-        type    : 'buttons',
-        text    : `[${cooker.name}]\n炊飯を開始できます。何合炊きますか？`,
-        actions : [
-          {
-            type  : 'postback',
-            label : '1合',
-            data  : JSON.stringify(Object.assign(dataTemplate, { amount : 1 }))
-          },
-          {
-            type  : 'postback',
-            label : '2合',
-            data  : JSON.stringify(Object.assign(dataTemplate, { amount : 2 }))
-          },
-          {
-            type  : 'postback',
-            label : '3合',
-            data  : JSON.stringify(Object.assign(dataTemplate, { amount : 3 }))
-          }
-        ]
-      }
-    });
+    const text = `[${cooker.name}]\n炊飯を開始できます。何合炊きますか？`;
+    return client.replyMessage(event.replyToken, messages.menuTemplate(dataTemplate, text));
   }
 }
 
@@ -151,7 +108,7 @@ const handleLineEvent = async event => {
       const cookable = (cooker.amount === 0 && cooker.weight < 30 && cooker.weight > -30);
       let text = `[${cooker.name}]\n${cookable ? '炊飯できます。' : (cooker.amount ? '炊飯中です。' : '炊飯完了しました。')}`;
       text += `\nご飯の量は現在${cooker.weight} gです。`
-      text += messages.getWarningText(cooker);
+      text += messages.warningText(cooker);
       return client.replyMessage(event.replyToken, { type : 'text', text });
     }
   }
