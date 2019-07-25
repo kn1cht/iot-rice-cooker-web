@@ -5,6 +5,7 @@ const line = require('@line/bot-sdk');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const store = new (require('../common/store'))();
 const isCookable = require('../common/isCookable');
+const messages = require('./lineMessages');
 
 const config = {
   channelAccessToken: process.env.LINE_ACCESS_TOKEN,
@@ -29,16 +30,56 @@ const startCooking = async data => {
   return text;
 }
 
-const handleCooking = (event, client, cooker, cookerId) => {
-  if(cooker.weight <= -30)
-    return client.replyMessage(event.replyToken, { type : 'text', text : 'Weight invalid' });
+const handleCooking = (event, client, cooker, cookerId, skipWarning) => {
+  if(cooker.weight <= -30) {
+    return client.replyMessage(event.replyToken, {
+      type : 'text',
+      text : `[${cooker.name}]\n内釜が装着されていない可能性があるため開始できません。\nご飯の量：${cooker.weight} g`
+    });
+  }
   else if(cooker.weight >= 30) {
     return client.replyMessage(event.replyToken, {
       type : 'text',
       text : `[${cooker.name}]\n内釜にご飯が残っているため開始できません。\nご飯の量：${cooker.weight} g`
     });
   }
+  else if((!cooker.water || cooker.waste || cooker.isRiceShortage) && !skipWarning) {
+    const dataTemplate = {
+      cookerId,
+      cookerName : cooker.name,
+      token : event.replyToken
+    };
+    let text = `[${cooker.name}]\n以下の警告が発生しています。本当に開始してもよろしいですか？`;
+    text += messages.getWarningText(cooker);
+
+    return client.replyMessage(event.replyToken, {
+      type     : 'template',
+      altText  : 'Warning Confirmation',
+      template : {
+        type    : 'confirm',
+        text,
+        actions : [
+          {
+            type  : 'postback',
+            label : '開始する',
+            data  : JSON.stringify(Object.assign(dataTemplate, { action : 'confirm' }))
+          },
+          {
+            type  : 'postback',
+            label : 'キャンセル',
+            data  : JSON.stringify(Object.assign(dataTemplate, { action : 'cancel' }))
+          }
+        ]
+      }
+    });
+  }
   else {
+    const dataTemplate = {
+      action : 'start',
+      cookerId,
+      cookerName : cooker.name,
+      token : event.replyToken
+    };
     return client.replyMessage(event.replyToken, {
       type     : 'template',
       altText  : 'Suihan Menu Buttons',
@@ -49,17 +90,17 @@ const handleCooking = (event, client, cooker, cookerId) => {
           {
             type  : 'postback',
             label : '1合',
-            data  : JSON.stringify({ amount : 1, cookerId, cookerName : cooker.name })
+            data  : JSON.stringify(Object.assign(dataTemplate, { amount : 1 }))
           },
           {
             type  : 'postback',
             label : '2合',
-            data  : JSON.stringify({ amount : 2, cookerId, cookerName : cooker.name })
+            data  : JSON.stringify(Object.assign(dataTemplate, { amount : 2 }))
           },
           {
             type  : 'postback',
             label : '3合',
-            data  : JSON.stringify({ amount : 3, cookerId, cookerName : cooker.name })
+            data  : JSON.stringify(Object.assign(dataTemplate, { amount : 3 }))
           }
         ]
       }
@@ -67,14 +108,29 @@ const handleCooking = (event, client, cooker, cookerId) => {
   }
 }
 
+const handlePostBackAction = async (event, data) => {
+  if(data.action === 'start') {
+    client.replyMessage(event.replyToken, {
+      type : 'text',
+      text : await startCooking(data)
+    });
+  }
+  else if(data.action === 'confirm') {
+    const cooker = await store.getDocInCollection('cookers', data.cookerId);
+    handleCooking(event, client, cooker, data.cookerId, true);
+  }
+  else if(data.action === 'cancel') {
+    client.replyMessage(event.replyToken, { type : 'text', text : 'キャンセルしました' });
+  }
+  return await store.setDocInCollection('replies', data.token, { used : true });
+}
+
 const handleLineEvent = async event => {
   if (event.type !== 'message' && event.type !== 'postback') return Promise.resolve(null);
   if(event.type === 'postback') {
-    console.log(JSON.parse(event.postback.data));  // TODO: 同じメッセージのデータは受けないようにする
-    return client.replyMessage(event.replyToken, {
-      type : 'text',
-      text : await startCooking(JSON.parse(event.postback.data))
-    });
+    const reply = await store.getDocInCollection('replies', JSON.parse(event.postback.data).token);
+    if(reply.used !== void 0) return Promise.resolve(null); // avoid duplicate actions for the same message
+    else return await handlePostBackAction(event, JSON.parse(event.postback.data));
   }
   else {
     if(event.message.type !== 'text') return Promise.resolve(null);
@@ -90,14 +146,13 @@ const handleLineEvent = async event => {
     console.log(`Service User: ${user.name} Default Cooker: ${cooker.name}`);
 
     if(event.message.text.match(/炊飯/))
-      return handleCooking(event, client, cooker, cookerId);
+      return handleCooking(event, client, cooker, cookerId, false);
     else {
       const cookable = (cooker.amount === 0 && cooker.weight < 30 && cooker.weight > -30);
-      const statusText = cookable ? '炊飯できます。' : (cooker.amount ? '炊飯中です。' : '炊飯完了しました。');
-      return client.replyMessage(event.replyToken, {
-        type : 'text',
-        text : `[${cooker.name}]\n${statusText}\nご飯の量は現在${cooker.weight} gです。`
-      });
+      let text = `[${cooker.name}]\n${cookable ? '炊飯できます。' : (cooker.amount ? '炊飯中です。' : '炊飯完了しました。')}`;
+      text += `\nご飯の量は現在${cooker.weight} gです。`
+      text += messages.getWarningText(cooker);
+      return client.replyMessage(event.replyToken, { type : 'text', text });
     }
   }
 }

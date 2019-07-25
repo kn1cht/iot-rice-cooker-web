@@ -34,6 +34,14 @@ class Store {
       });
     return true;
   }
+  async setDocInCollection(cName, dName, data) {
+    await this.db.doc(`${cName}/${dName}`)
+      .set(data).catch((err) => {
+        console.error(err);
+        return false;
+      });
+    return true;
+  }
 }
 
 module.exports = Store;
