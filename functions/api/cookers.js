@@ -45,7 +45,7 @@ router.put('/:id/active', async(req, res) => {
     res.json({ ok });
   }
   else if(active === 1) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { active : true });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { active : true, amount : 0 });
     res.json({ ok });
   }
   else
