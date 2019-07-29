@@ -39,6 +39,16 @@ const menuTemplate = (dataTemplate, text) => {
       actions : [
         {
           type  : 'postback',
+          label : '0.25合',
+          data  : JSON.stringify(Object.assign(dataTemplate, { amount : 0.25 }))
+        },
+        {
+          type  : 'postback',
+          label : '0.5合',
+          data  : JSON.stringify(Object.assign(dataTemplate, { amount : 0.5 }))
+        },
+        {
+          type  : 'postback',
           label : '1合',
           data  : JSON.stringify(Object.assign(dataTemplate, { amount : 1 }))
         },
@@ -46,11 +56,6 @@ const menuTemplate = (dataTemplate, text) => {
           type  : 'postback',
           label : '2合',
           data  : JSON.stringify(Object.assign(dataTemplate, { amount : 2 }))
-        },
-        {
-          type  : 'postback',
-          label : '3合',
-          data  : JSON.stringify(Object.assign(dataTemplate, { amount : 3 }))
         }
       ]
     }
