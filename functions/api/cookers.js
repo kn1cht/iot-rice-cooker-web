@@ -29,9 +29,14 @@ router.put('/:id/amount', async(req, res) => {
   const cook = await isCookable(req.params.id);
   if(amount > 0 && !cook.ok) res.json(cook);
   else {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { amount });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, { amount, displayedAmount });
     res.json({ ok });
   }
+});
+
+router.get('/:id/displayedAmount', async(req, res) => {
+  const cooker = await store.getDocInCollection('cookers', req.params.id);
+  res.json(cooker.displayedAmount);
 });
 
 router.get('/:id/active', async(req, res) => {
@@ -41,11 +46,18 @@ router.get('/:id/active', async(req, res) => {
 router.put('/:id/active', async(req, res) => {
   const active = parseInt(req.body.active);
   if(active === 0) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { active : false, amount : 0 });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, {
+      active          : false,
+      amount          : 0,
+      displayedAmount : 0
+    });
     res.json({ ok });
   }
   else if(active === 1) {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { active : true, amount : 0 });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, {
+      active : true,
+      amount : 0
+    });
     res.json({ ok });
   }
   else

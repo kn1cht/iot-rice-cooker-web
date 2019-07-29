@@ -68,8 +68,11 @@ const CookerSummaryCard = props => {
   }
 
   const cookingButton = () => {
-    if(cooker.amount) return (
+    if(cooker.amount && cooker.displayedAmount) return (
       <Button onClick={abortCooking} size="small" variant="contained" color="secondary">中止</Button>
+    );
+    else if(cooker.displayedAmount) return (
+      <Button size="small" variant="contained" color="primary" disabled="true">炊飯中</Button>
     );
     else return (
       <Button onClick={startCooking} size="small" variant="contained" color="primary">炊飯開始</Button>
@@ -87,7 +90,7 @@ const CookerSummaryCard = props => {
           {cooker.active ? '炊飯中' : '待機中'}
         </Typography>
         <Typography variant="h5" gutterBottom>
-          炊飯量 {cooker.amount} 合
+          炊飯量 {cooker.displayedAmount} 合
         </Typography>
         <Typography variant="h5" gutterBottom>
           釜内重量 {cooker.weight} g
