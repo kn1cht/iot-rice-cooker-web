@@ -14,20 +14,12 @@
     ],
     "rewrites": [
       {
-        "source": "/app",
-        "destination": "/index.html"
-      },
-      {
-        "source": "/app/**",
-        "destination": "/index.html"
-      },
-      {
-        "source": "/api",
-        "function": "app"
-      },
-      {
         "source": "/api/**",
         "function": "app"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
       }
     ],
     "ignore": [
