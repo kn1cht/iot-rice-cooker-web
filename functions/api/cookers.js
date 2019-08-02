@@ -29,7 +29,9 @@ router.put('/:id/amount', async(req, res) => {
   const cook = await isCookable(req.params.id);
   if(amount > 0 && !cook.ok) res.json(cook);
   else {
-    const ok = await store.updateDocInCollection('cookers', req.params.id, { amount, displayedAmount });
+    const ok = await store.updateDocInCollection('cookers', req.params.id, {
+      amount, displayedAmount : amount
+    });
     res.json({ ok });
   }
 });
@@ -47,9 +49,8 @@ router.put('/:id/active', async(req, res) => {
   const active = parseInt(req.body.active);
   if(active === 0) {
     const ok = await store.updateDocInCollection('cookers', req.params.id, {
-      active          : false,
-      amount          : 0,
-      displayedAmount : 0
+      active : false,
+      amount : 0
     });
     res.json({ ok });
   }
