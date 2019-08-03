@@ -23,7 +23,7 @@ const startCooking = async data => {
     if(amount > 0 && !cook.ok)
       text = `[${cookerName}]\n開始できませんでした。`;
     else {
-      const ok = await store.updateDocInCollection('cookers', cookerId, { amount });
+      const ok = await store.updateDocInCollection('cookers', cookerId, { amount, displayedAmount : amount });
       text = ok ? `[${cookerName}]\n${amount}合で炊飯を開始します。` : `[${cookerName}]\n開始できませんでした。`;
     }
   }
